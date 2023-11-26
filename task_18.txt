@@ -1,0 +1,1 @@
+10 мб для моей версии Chrome 119 источник: https://developer.chrome.com/docs/extensions/reference/storage/#:~:text=Data%20is%20stored%20locally%20and,storage.sync

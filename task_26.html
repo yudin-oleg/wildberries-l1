@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM Tree Traversal</title>
+</head>
+<body>
+
+<!-- простой HTML контент для тестирования -->
+<div id="root">
+    <h1>Main Heading</h1>
+    <p>This is a paragraph.</p>
+    <ul>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+    </ul>
+</div>
+
+<script>
+    // функция для рекурсивного обхода DOM дерева и выполнения дейсвий на каждом узле
+    function traverseDOM(element, action) {
+        // выполнить определенное действие на узле
+        action(element);
+
+        // рекурсивно обойти дочернии узлы
+        for (let i = 0; i < element.children.length; i++) {
+        traverseDOM(element.children[i], action);
+        }
+    }
+
+    // действие для выполнения на узлах
+    function printTagInfo(node) {
+        console.log(node.tagName);
+    }
+
+    // тестирование
+    const rootElement = document.getElementById('root');
+    traverseDOM(rootElement, printTagInfo);
+</script>
+
+</body>
+</html>

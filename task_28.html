@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create and Add Element Using Templates</title>
+</head>
+<body>
+
+<!-- определение шаблона -->
+<template id="customTemplate">
+    <div class="custom-element">
+        <h2>Title</h2>
+        <p>Content goes here.</p>
+    </div>
+</template>
+
+<script>
+    // функция чтобы создавать и добавлять шаблоны
+    function createAndAddElement() {
+        // получить элемент шаблона
+        const template = document.getElementById('customTemplate');
+
+        // скопировать контент шаблона
+        const clonedTemplate = document.importNode(template.content, true);
+
+        // кастомизировать контент шаблона
+        clonedTemplate.querySelector('h2').textContent = 'New Title';
+        clonedTemplate.querySelector('p').textContent = 'New content added dynamically.';
+
+        // вставить скопированный и кастомизированный элемент в DOM
+        document.body.appendChild(clonedTemplate);
+    }
+
+    // тестирование
+    createAndAddElement();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Callstack Max Size</title>
+</head>
+<body>
+    <script>
+        // функция для вывода максимального размера стека
+        function maxStackSize(){
+            var i = 0;
+            // рекурсивно вызывать функцию до тех пор пока не выведется ошибка
+            function recurse () {
+                i++;
+                recurse();
+            }
+            try {
+                recurse();
+            } catch (ex) {
+                // вывести максимальный размер коллстека
+                alert('maxStackSize = ' + i + '\nerror: ' + ex);
+            }
+        }
+
+        // тестирование
+        maxStackSize();
+    </script>
+</body>
+</html>

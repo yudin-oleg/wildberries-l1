@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create and Style Element</title>
+<style>
+    /* CSS стили */
+    .styled-element {
+        background-color: #3498db;
+        color: #ffffff;
+        padding: 10px;
+        font-size: 18px;
+        text-align: center;
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+
+<script>
+    // функция для создания и стилизации элемента
+    function createAndStyleElement() {
+        // создать новый div элемент
+        const newElement = document.createElement('div');
+
+        // Задать контекст элементу
+        newElement.textContent = 'Это стилизованный элемент!';
+
+        // добавить класс для стилизации элемента
+        newElement.classList.add('styled-element');
+
+        // вставсить элемент а DOM
+        document.body.appendChild(newElement);
+    }
+
+    // вызвать функци. при загрузки страницы
+    window.onload = createAndStyleElement;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VK Posts Widget</title>
+    <style>
+        /* CSS стили */
+        html, body {
+        overflow: hidden;
+        }
+        #widgetContainer {
+        width: 600px;
+        height: 100vh;
+        margin: auto;
+        overflow-y: scroll;
+        border: 1px solid #ccc;
+        padding: 10px;
+        }
+
+        .post {
+        border-bottom: 1px solid #eee;
+        margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- контейнер с постами -->
+    <div id="widgetContainer"></div>
+    <script>
+        const widgetContainer = document.getElementById('widgetContainer');
+        const STORAGE_KEY = 'vkPosts';
+        const MAX_STORAGE_SIZE_MB = 10; // максимальный размер localStorage
+        const MAX_STORAGE_SIZE_BYTES = MAX_STORAGE_SIZE_MB * 1024 * 1024; // максимальный размер localStorage в байтах
+        const apiKey = "f8bf33bbf8bf33bbf8bf33bbfdfba943e5ff8bff8bf33bb9ddc764ef1f4f7f09a0f03eb"; // accessToken
+
+        //const apiKey = 'vk1.a.oA3lpxSro47A-8bpDgSoiPfxY4_SvgP-Xp1lg_7VSP5LX9kfUm4OaZKVJqDpybMgnqv2ZM1se_2DcIUhFhuwC17lx9OnB5pQuTMwtfvfNnUA3TNitWKy6Wr1ezwlsW0ZvwR6ZC8nwe3HLcyrvp93l6necMBU0ScAz5MWwwQQc6gAhHTnNbeNt3suXO5J3RpA3hGcXkruibWEAA4R-Nx6Hg';
+        const groupId = '-1239834'; // id группы
+        const count = 20; // количество постов для загрузки
+        let offset = 0; // смещение
+
+        // функци для загрузки постов из localStorage
+        function loadPosts() {
+            // localStorage.clear();
+            const storedData = localStorage.getItem(STORAGE_KEY); // данные записанные в localStorage
+            let cachedPosts = []; // массив постов записаных в кэш
+
+            // получить массив постов из кэша
+            if (storedData !== undefined && storedData !== null) {
+                cachedPosts = JSON.parse(storedData);
+            } else {
+                console.log("Stored data is null or undefined.");
+            }
+
+            // отобразить посты
+            displayPosts(cachedPosts);
+
+            // загрузить посты через VK API
+            loadFromVKAPI();
+        }
+
+        // функция для отображения постов
+        function displayPosts(posts) {
+            widgetContainer.innerHTML = posts.map(post => `<div class="post">${post.text}</div>`).join('');
+        }
+
+        // загрузить посты через VK API
+        function loadFromVKAPI() {
+
+            // определить параметры для API запросы
+            const method = 'wall.get';
+            const params = `owner_id=${groupId}&offset=${offset}&count=${count}&v=5.131&access_token=${apiKey}`;
+            offset += 20;
+            let cachedPosts = [];
+            
+            // сделать API запрос
+            fetch(`https://secure-lowlands-24211-370e67457f65.herokuapp.com/https://api.vk.com/method/${method}?${params}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const newPosts = data.response.items || [];
+
+                    // загрузить кэшированные посты из localStorage
+                    if(localStorage.getItem(STORAGE_KEY) !== undefined && localStorage.getItem(STORAGE_KEY) !== null){
+                        cachedPosts = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                    }
+
+                    // если новым постам нет места то удалить старые
+                    // один симол занимает 16 бит то есть 2 байта
+                    while (3*1024 + (JSON.stringify(cachedPosts).length*2) > MAX_STORAGE_SIZE_BYTES) {
+                        cachedPosts = cachedPosts.splice(0, 20);
+                    }
+
+                    // объединить cachedPosts и newPosts
+                    const updatedPosts = [...cachedPosts, ...newPosts];
+
+                    // сохранить кэшированные посты в localStorage
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPosts));
+                    localStorageSpace();
+
+                    // отобразить посты в контейнере
+                    displayPosts(updatedPosts);
+                })
+                .catch(error => {
+                    console.error('Error making VK API request:', error);
+                });
+        }
+
+        // загрузить посты когда загружена страница
+        window.onload = loadPosts;
+
+        // подгружать новые посты когда скролл дошел до конца
+        widgetContainer.addEventListener('scroll', () => {
+            if (widgetContainer.scrollTop + widgetContainer.clientHeight + 1 >= widgetContainer.scrollHeight) {
+                loadPosts();
+            }
+        });
+
+        // функция для отображения занятого просторанства в localStorage и всего пространства в целом
+        const localStorageSpace = () => {
+            let allStrings = '';
+            for (const key of Object.keys(window.localStorage)) {
+                allStrings += window.localStorage[key];
+            }
+            let occupiedSpace = allStrings ? 3 + ((allStrings.length * 16) / (8 * 1024)) + ' KB' : 'Empty (0 KB)';
+            console.log(`${occupiedSpace}/` + `Max Sorage Size: ${MAX_STORAGE_SIZE_MB} MB`);
+        };
+    </script>
+</body>
+</html>

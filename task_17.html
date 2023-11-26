@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Input with Geocoding</title>
+    <style>
+        /* Стиль для результатов */
+        #results {
+        border: 1px solid #ccc;
+        max-height: 150px;
+        overflow-y: auto;
+        position: absolute;
+        width: 300px;
+        display: none;
+        }
+
+        #results li {
+        padding: 5px;
+        cursor: pointer;
+        list-style-type: none;
+        }
+
+        #results li:hover {
+        background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+
+<!-- поле ввода адреса -->
+<input type="text" id="addressInput">
+
+<!-- список соответствующих адресов -->
+<ul id="results"></ul>
+
+<script>
+    // функция для дебаунсинга
+    function debounce(func, delay) {
+        let timeoutId;
+        return function () {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, arguments), delay);
+        };
+    }
+
+    // функция для троттлинга
+    function throttle(func, limit) {
+        let inThrottle;
+        return function () {
+        if (!inThrottle) {
+            func.apply(this, arguments);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+        };
+    }
+
+    // функция для осуществления геокодинга с использованием Yandex.Maps API
+    function geocodeAddress(query) {
+        const apiKey = '140032cf-8fef-4fb7-8021-72cfac9a4a14';
+        const apiUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=${apiKey}&format=json&geocode=${query}`;
+
+        fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const results = data.response.GeoObjectCollection.featureMember;
+
+            // отобразить список с адресами
+            const resultsList = document.getElementById('results');
+            resultsList.innerHTML = '';
+
+            results.forEach(result => {
+            const address = result.GeoObject.name;
+            const listItem = document.createElement('li');
+            listItem.textContent = address;
+
+            // обработать выбор адреса
+            listItem.addEventListener('click', () => {
+                document.getElementById('addressInput').value = address;
+                resultsList.style.display = 'none';
+            });
+
+            resultsList.appendChild(listItem);
+            });
+
+            // показать результаты
+            resultsList.style.display = 'block';
+        })
+        .catch(error => console.error('Geocoding error:', error));
+    }
+
+    //функция геокодинга с дебаунсингом и троттлингом
+    const debouncedGeocode = debounce(geocodeAddress, 300);
+    const throttledGeocode = throttle(geocodeAddress, 1000);
+
+    // обработчик события для поле адреса
+    const addressInput = document.getElementById('addressInput');
+    addressInput.addEventListener('input', function () {
+        const query = this.value.trim();
+
+        // выбрать одину из двух функций
+        debouncedGeocode(query);
+        // throttledGeocode(query);
+    });
+</script>
+
+</body>
+</html>

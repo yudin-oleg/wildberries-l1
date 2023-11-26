@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    /* стили для анимированного элемента */
+    #animatedElement {
+    width: 100px;
+    height: 100px;
+    background-color: #3498db;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    transition: all 1s ease;
+    }
+</style>
+<title>Element Animation</title>
+</head>
+<body>
+
+<div id="animatedElement"></div>
+
+<script>
+    // функция для добавления анимации к элементу
+    function animateElement() {
+        const element = document.getElementById('animatedElement');
+
+        // изменить положение чтобы вызвать анимацию
+        element.style.top = '200px';
+        element.style.left = '200px';
+    }
+
+    // вызвать анимацию после 1 секунды ожидания
+    setTimeout(animateElement, 1000);
+</script>
+
+</body>
+</html>

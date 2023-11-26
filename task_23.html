@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Complexity Analyzer</title>
+</head>
+<body>
+    <!-- поле для ввода пароля -->
+    <input type="password" id="passwordInput" placeholder="Введите ваш пароль">
+
+    <!-- кнопка для запуска функции для оценки сложности пароля -->
+    <button onclick="analyzePassword()">Оценить сложность пароля</button>
+
+    <!-- отобразить результаты -->
+    <div id="result"></div>
+
+    <script>
+        // функция для оценки слоности пароля
+        function analyzePassword() {
+            // получить прол  введенный пользователем
+            const password = document.getElementById('passwordInput').value;
+
+            // определить критерии сложности пароля
+            const minLength = 8;
+            const minUpperCase = 1;
+            const minLowerCase = 1;
+            const minDigits = 1;
+            const minSpecialChars = 1;
+
+            // проверить дляину пароля
+            let complexityRating = password.length >= minLength ? 1 : 0;
+            let suggestions = [];
+
+            // проверить на наличие букв в высшем регистре
+            if (password.match(/[A-Z]/)) {
+                complexityRating++;
+            } else {
+                suggestions.push('Добавьте хотя бы одну букву в высшем регистре.');
+            }
+
+            // проверить на наличие букв в низшем регистре
+            if (password.match(/[a-z]/)) {
+                complexityRating++;
+            } else {
+                suggestions.push('Добавьте хотя бы одну букву в низшем регистре.');
+            }
+
+            // проверить на наличие цифр
+            if (password.match(/\d/)) {
+                complexityRating++;
+            } else {
+                suggestions.push('Добавьте хотя бы одну цифру.');
+            }
+
+            // проверить на наличие особых символов
+            if (password.match(/[!@#$%^&*(),.?":{}|<>]/)) {
+                complexityRating++;
+            } else {
+                suggestions.push('Добавьте хотя бы один особый символ.');
+            }
+
+            // показать результат со сложностью пароля и рекомендациями
+            const resultElement = document.getElementById('result');
+            if (complexityRating === 5) {
+                resultElement.innerHTML = 'Сложность пароля: Сильный';
+            } else {
+                resultElement.innerHTML = `Сложность пароля: Слабый (${complexityRating}/5)<br>Suggestions: ${suggestions.join(', ')}`;
+            }
+        }
+</script>
+
+</body>
+</html>
